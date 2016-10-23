@@ -1,0 +1,8 @@
+.idea/
+.vagrant/
+.vscode/
+.env
+adminer.php
+vendor/
+smarty/templates_c/*.php
+smarty/cache/*
