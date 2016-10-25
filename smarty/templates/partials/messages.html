@@ -1,0 +1,8 @@
+{if isset($messages)}
+    {foreach $messages as $message}
+    <div class="alert alert-dismissible alert-{$message.type}">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <p>{$message.data}</p>
+    </div>
+    {/foreach}
+{/if}

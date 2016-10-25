@@ -6,3 +6,4 @@ adminer.php
 vendor/
 smarty/templates_c/*.php
 smarty/cache/*
+/test.php

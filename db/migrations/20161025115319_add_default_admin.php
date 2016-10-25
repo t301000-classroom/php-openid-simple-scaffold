@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class CreateUsersTable extends AbstractMigration
+class AddDefaultAdmin extends AbstractMigration
 {
     /**
      * Change Method.
@@ -25,15 +25,27 @@ class CreateUsersTable extends AbstractMigration
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function change()
+    // public function change()
+    // {
+    //
+    // }
+
+    public function up()
     {
+        $admin = [
+            'username' => 'admin',
+            'real_name' => '管理員',
+            'password' => password_hash('admin', PASSWORD_DEFAULT),
+            'is_admin' => 1
+        ];
+
         $table = $this->table('users');
-        $table->addColumn('username', 'string')
-            ->addColumn('real_name', 'string')
-            ->addColumn('password', 'string')
-            ->addColumn('openid_data', 'text', array('null' => true))
-            ->addColumn('is_admin', 'boolean', array('default' => false))
-            ->addTimestamps()
-            ->create();
+        $table->insert($admin)
+            ->saveData();
+    }
+
+    public function down()
+    {
+        $this->execute('DELETE FROM users');
     }
 }

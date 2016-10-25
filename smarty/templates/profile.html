@@ -1,0 +1,17 @@
+{extends "master.html"}
+
+{block name=pageTitle}
+我的帳號
+{/block}
+
+{block name=mainContent}
+
+<div>
+    <pre>
+        {$currUser|@var_dump}
+    </pre>
+</div>
+
+{/block}
+
+{block name=script}{/block}

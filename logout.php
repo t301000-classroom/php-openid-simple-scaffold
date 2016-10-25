@@ -2,7 +2,9 @@
 
 require_once './bootstrap.php';
 
-unset($_SESSION['user']);
+session_destroy();
+// unset($_SESSION['user']);
 
-header('Location: /');
+// 登出後轉回首頁
+header('Location: ' . SITE_URL);
 exit();
