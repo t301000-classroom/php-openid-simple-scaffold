@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Phinx\Migration\AbstractMigration;
 
 class AddDefaultAdmin extends AbstractMigration
@@ -36,7 +37,8 @@ class AddDefaultAdmin extends AbstractMigration
             'username' => 'admin',
             'real_name' => '管理員',
             'password' => password_hash('admin', PASSWORD_DEFAULT),
-            'is_admin' => 1
+            'is_admin' => 1,
+            'created_at' => Carbon::now()
         ];
 
         $table = $this->table('users');

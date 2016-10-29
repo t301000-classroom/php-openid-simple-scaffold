@@ -45,7 +45,6 @@
                     <div class="col-lg-10">
                         <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="請再輸入一次新密碼">
                     </div>
-
                 </div>
 
                 <div class="form-group">
@@ -56,6 +55,12 @@
                     <div class="col-lg-10 col-lg-offset-2">
                         <button type="reset" class="btn btn-default" id="resetBtn">取消</button>
                         <button type="submit" class="btn btn-primary" id="submitBtn">確定</button>
+
+                        {if isset($smarty.get.id)}
+                        <a href="{$home}/admin/users.php" class="btn btn-success" id="backBtn">回帳號管理</a>
+                        {/if}
+
+                        <input type="hidden" name="id" value="{$userData.id}">
                     </div>
                 </div>
 
@@ -98,22 +103,27 @@
 
 <script type="text/javascript">
     $("document").ready(function() {
+        var passwordInputs = $("input[type='password']");
+        var passwordError = $('#passwordError');
+        var submitBtn = $('#submitBtn');
+        var resetBtn = $('#resetBtn');
+        var form = $('form');
+
         // submit button disabled ?
         var disabled = true;
         // start check password and confirm password ?
         // 避免錯誤訊息太早出現
         var startCheck = false;
 
-        var passwordInputs = $("input[type='password']");
-        var passwordError = $('#passwordError');
-        var submitBtn = $('#submitBtn');
-        var resetBtn = $('#resetBtn');
-
         init();
 
         passwordInputs.on('input', checkPassword);
 
         resetBtn.on('click', init);
+
+        form.on('submit', function() {
+            passwordError.hide();
+        });
 
         function init() {
             passwordError.hide();

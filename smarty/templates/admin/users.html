@@ -33,11 +33,13 @@
                     {/if}
                 </td>
                 <td>
-                    <a href="" class="btn btn-success">
+                    <!-- 查看 user 帳號資訊 -->
+                    <a href="{$home}/profile.php?id={$user.id}" class="btn btn-success">
                         <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
                     </a>
 
                     {if $user.id > 1}
+                        <!-- 刪除 -->
                         <button type="button" class="btn btn-danger"
                                 data-toggle="modal"
                                 data-target="#exampleModal"
@@ -49,6 +51,7 @@
                         </button>
 
                         {if $user.isAdmin}
+                            <!-- 提昇為管理員 -->
                             <button type="button" class="btn btn-warning"
                                     data-toggle="modal"
                                     data-target="#exampleModal"
@@ -59,6 +62,7 @@
                                 <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
                             </button>
                         {else}
+                            <!-- 取消管理權 -->
                             <button type="button" class="btn btn-warning"
                                     data-toggle="modal"
                                     data-target="#exampleModal"
@@ -86,7 +90,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+                <h4 class="modal-title" id="exampleModalLabel"></h4>
             </div>
             <div class="modal-body">
                 <h4></h4>

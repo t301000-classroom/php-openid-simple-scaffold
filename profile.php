@@ -35,7 +35,9 @@ function showPage()
 {
     global $smarty;
 
-    $userData = getUserDataById($_SESSION['user']['id']);
+    $id = ($_SESSION['user']['is_admin'] && isset($_GET['id'])) ? $_GET['id'] : $_SESSION['user']['id'];
+
+    $userData = getUserDataById($id);
     $smarty->assign('userData', $userData);
     $smarty->display('profile.html');
 }
@@ -54,7 +56,7 @@ function process()
         ];
     } else {
         // 兩次密碼符合，執行密碼變更
-        changePassword($newPassword, $_SESSION['user']['id']);
+        changePassword($newPassword, $_POST['id']);
     }
 
     header('Location: ' . $_SERVER['PHP_SELF']);
