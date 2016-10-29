@@ -3,10 +3,7 @@
 require_once './bootstrap.php';
 
 // 已登入則導回首頁
-if (isLogined()) {
-    header('Location: ' . SITE_URL);
-    exit();
-}
+guestOnly();
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
@@ -64,6 +61,8 @@ function login(array $credential)
         $stmt->bind_result($user['id'], $user['real_name'], $user['is_admin'], $hashedPassword);
         $stmt->fetch();
         $stmt->close();
+        // local 代表由本機帳號登入，才能進入 profile.php
+        $user['type'] = 'local';
 
         if (!password_verify($credential['password'], $hashedPassword)) {
             $user = [];

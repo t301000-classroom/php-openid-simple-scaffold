@@ -95,6 +95,8 @@ if (! function_exists('ends_with')) {
     }
 }
 
+/********** 自定義輔助函數 **********/
+
 if (! function_exists('isLogined')) {
     /**
      * 檢查是否已登入
@@ -103,16 +105,11 @@ if (! function_exists('isLogined')) {
      */
     function isLogined()
     {
-        if (isset($_SESSION['user'])) {
-            return true;
-        }
-
-        return false;
+        return isset($_SESSION['user']);
     }
 }
 
 if (! function_exists('dd')) {
-
     /**
      * 輸出變數內容
      *
@@ -127,6 +124,62 @@ if (! function_exists('dd')) {
 
         if ($die) {
             die();
+        }
+    }
+}
+
+if (! function_exists('authGuard')) {
+    /**
+     * 認證防護
+     *
+     * 未登入則導向登入
+     *
+     * @param $redirectTo 登入後導向至
+     */
+    function authGuard($redirectTo = null)
+    {
+        if (!isLogined()) {
+            $_SESSION['target_url'] = $redirectTo;
+            $_SESSION['messages'] = [
+                ['type' => 'danger', 'data' => '請先登入']
+            ];
+            header('Location: ' . SITE_URL . '/login.php');
+            exit();
+        }
+    }
+}
+
+if (! function_exists('guestOnly')) {
+    /**
+     * 只允許 guest
+     *
+     * 已登入則導回首頁
+     */
+    function guestOnly()
+    {
+        if (isLogined()) {
+            header('Location: ' . SITE_URL);
+            exit();
+        }
+    }
+}
+
+if (! function_exists('adminOnly')) {
+    /**
+     * 只允許 admin
+     *
+     * @param $redirectTo 登入後導向至
+     */
+    function adminOnly($redirectTo)
+    {
+        authGuard($redirectTo);
+        // 權限不足，導回首頁
+        if (!$_SESSION['user']['is_admin']) {
+            $_SESSION['messages'] = [
+                ['type' => 'danger', 'data' => '權限不足']
+            ];
+            header('Location: ' . SITE_URL);
+            exit();
         }
     }
 }

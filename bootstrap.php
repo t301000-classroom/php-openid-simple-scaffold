@@ -1,12 +1,11 @@
 <?php
 
+use Dotenv\Dotenv;
+
 date_default_timezone_set('Asia/Taipei');
 
 require_once __DIR__ . '/vendor/autoload.php';
-
 session_start();
-
-use Dotenv\Dotenv;
 
 $dotenv = new Dotenv(__DIR__);
 $dotenv->load();
@@ -43,9 +42,6 @@ $smarty->setCacheDir(SMARTY_ROOT . '/cache');
 $smarty->assign('home', SITE_URL);
 // 目前登入之使用者資料
 $smarty->assign('currUser', isLogined() ? $_SESSION['user'] : null);
-// 訊息
+// 處理訊息
 $smarty->assign('messages', isset($_SESSION['messages']) ? $_SESSION['messages'] : null);
-// if (isset($_SESSION['messages'])) {
-//     die(var_dump($_SESSION['messages']));
-// }
 unset($_SESSION['messages']);

@@ -1,13 +1,18 @@
-{extends "master.html"}
+{extends "admin/master.html"}
 
-{block name=pageTitle}
-管理區
+{block name="pageTitle" append} - 首頁{/block}
+
+{block name="adminMain"}
+
+<div>
+    <h3>I am child block</h3>
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. A animi aut ducimus eveniet id impedit in ipsa ipsam itaque iusto minima, nesciunt nihil omnis quia recusandae rerum sequi unde vero?
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci earum harum ipsam magni nam quam quibusdam quo veritatis. Assumenda deleniti eaque enim exercitationem labore laudantium minima ullam. Itaque, quam, ut?
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquam dicta est. Accusantium atque debitis dolorem, ea illo ipsa laboriosam laborum, libero maxime minus pariatur praesentium quibusdam quod saepe tempora?
+    </p>
+</div>
+
 {/block}
 
-{block name=mainContent}
-
-<h2>管理區</h2>
-
-是管理員？ {$currUser.is_admin}
-
-{/block}
+{block name="script"}{/block}

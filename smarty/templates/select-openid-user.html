@@ -1,0 +1,42 @@
+{extends "master.html"}
+
+{block name="pageTitle"}OpenID 登入{/block}
+
+{block name="mainContent"}
+
+<div>
+    <h5 class="text-center">選擇登入身份</h5>
+    <form action="" method="POST">
+        <table class="table table-hover">
+
+            {foreach $authInfos as $schoolId => $data}
+            <tr>
+                <td>{$schoolId}</td>
+                <td>{$data.org_name}</td>
+                <td>{$data.role}</td>
+                <td>{$data.title}</td>
+                <td>{implode(", ",$data.groups)}</td>
+                <td class="text-center">
+                    {if $data@first}
+                        <input type="radio" name="schoolId" value="{$schoolId}" checked>
+                    {else}
+                        <input type="radio" name="schoolId" value="{$schoolId}">
+                    {/if}
+                </td>
+            </tr>
+            {/foreach}
+
+            <tr>
+                <td colspan="5"></td>
+                <td class="text-center">
+                    <button type="submit" class="btn btn-primary">登入</button>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+</div>
+
+{/block}
+
+{block name="script"}{/block}

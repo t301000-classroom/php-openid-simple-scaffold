@@ -1,17 +1,150 @@
 {extends "master.html"}
 
-{block name=pageTitle}
-我的帳號
-{/block}
+{block name="pageTitle"}帳號資訊{/block}
 
-{block name=mainContent}
+{block name="mainContent"}
 
-<div>
-    <pre>
-        {$currUser|@var_dump}
-    </pre>
+<div class="flex-row-container flex-wrap my-row">
+    <div class="form-horizontal my-col">
+        <fieldset>
+
+            <legend>帳號資訊</legend>
+
+            <div class="form-group">
+                <label for="username" class="col-lg-2 control-label">帳號</label>
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" id="username" value="{$userData.username}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="realName" class="col-lg-2 control-label">姓名</label>
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" id="realName" value="{$userData.real_name}" disabled>
+                </div>
+            </div>
+
+        </fieldset>
+    </div>
+
+    <div class="form-horizontal my-col">
+        <form action="" method="POST">
+            <fieldset>
+
+                <legend>變更密碼</legend>
+
+                <div class="form-group">
+                    <label for="newPassword" class="col-lg-2 control-label">新密碼</label>
+                    <div class="col-lg-10">
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="請輸入新密碼">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="col-lg-2 control-label">確認密碼</label>
+                    <div class="col-lg-10">
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="請再輸入一次新密碼">
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <div class="alert alert-danger" id="passwordError">兩次密碼不一樣</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button type="reset" class="btn btn-default" id="resetBtn">取消</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">確定</button>
+                    </div>
+                </div>
+
+            </fieldset>
+        </form>
+    </div>
+
+    {if isset($userData.openid_data)}
+    <div class="form-horizontal my-col">
+        <fieldset>
+
+            <legend>單位資訊</legend>
+
+            <table class="table table-striped table-hover ">
+                <thead>
+                <tr>
+                    <th>校代碼</th>
+                    <th>學校</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {foreach $userData.openid_data as $k => $v}
+                <tr>
+                    <td>{$k}</td>
+                    <td>{$v.org_name}</td>
+                </tr>
+                {/foreach}
+                </tbody>
+            </table>
+
+        </fieldset>
+    </div>
+    {/if}
 </div>
 
 {/block}
 
-{block name=script}{/block}
+{block name="script"}
+
+<script type="text/javascript">
+    $("document").ready(function() {
+        // submit button disabled ?
+        var disabled = true;
+        // start check password and confirm password ?
+        // 避免錯誤訊息太早出現
+        var startCheck = false;
+
+        var passwordInputs = $("input[type='password']");
+        var passwordError = $('#passwordError');
+        var submitBtn = $('#submitBtn');
+        var resetBtn = $('#resetBtn');
+
+        init();
+
+        passwordInputs.on('input', checkPassword);
+
+        resetBtn.on('click', init);
+
+        function init() {
+            passwordError.hide();
+            submitBtn.attr("disabled", true);
+            startCheck = false;
+        }
+
+        function checkPassword() {
+            var val1 = passwordInputs[0].value.trim(); // newPassword
+            var val2 = passwordInputs[1].value.trim(); // confirmPassword
+
+            // 長度一樣之後才啟動檢查
+            if(val2.length == val1.length) {
+                startCheck = true;
+            }
+
+            if(startCheck) {
+                disabled = (val1 !== val2 || (val1 == '' && val2 == ''));
+                submitBtn.attr("disabled", disabled);
+                showError(val1, val2);
+            }
+        }
+
+        function showError(val1, val2) {
+            if(val1 != '' && val2 != '' && val1 !== val2) {
+                passwordError.show();
+            } else {
+                passwordError.hide();
+            }
+        }
+    });
+</script>
+
+{/block}

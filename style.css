@@ -5,16 +5,68 @@ html, body {
 }
 
 .main-content {
-    min-height: 400px;
+    /*min-height: 400px;*/
+    /*width: 100%;*/
     padding-top: 30px;
-    display: flex;
-    /*align-items: flex-start;*/
-    /*justify-content: center;*/
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*align-items: center;*/
 }
 
 .custom-alphabet-case {
     text-transform: none;
+}
+
+.flex-row-container {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-col-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.my-row {
+    justify-content: space-between;
+}
+
+.my-row>.my-col {
+    width: 500px;
+    margin: 0 15px;
+}
+
+.login-panel {
+    width: 40%;
+    min-width: 300px;
+    max-width: 400px;
+}
+
+@media (max-width: 1200px) {
+    .my-row {
+        flex-wrap: nowrap;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .my-row>.my-col {
+        width: 500px;
+        margin: 0 0 15px;
+    }
+}
+
+.admin-main {
+    flex: 3;
+    padding: 0 10px;
+}
+
+.admin-aside {
+    flex: 1;
+    padding: 0 10px;
 }

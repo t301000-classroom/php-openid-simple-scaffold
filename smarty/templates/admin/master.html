@@ -1,0 +1,18 @@
+{extends "master.html"}
+
+{block name="pageTitle"}管理區{/block}
+
+{block name="mainContent"}
+
+<div class="flex-row-container">
+    <div class="admin-main">
+        {block name="adminMain"}{/block}
+    </div>
+    <div class="admin-aside">
+        {include "admin/partials/aside.html"}
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}{/block}

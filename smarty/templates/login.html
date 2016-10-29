@@ -1,35 +1,35 @@
 {extends 'master.html'}
 
-{block name=pageTitle}
-登入
-{/block}
+{block name="pageTitle"}登入{/block}
 
-{block name=mainContent}
+{block name="mainContent"}
 
-<div class="panel panel-primary">
-    <div class="panel-body">
-        <form action="" method="POST">
-            <div class="form-group">
-                <label class="control-label" for="username">帳號</label>
-                <input type="text" class="form-control" name="username" id="username" value="{$credential.username}" required>
+<div class="flex-row-container">
+    <div class="panel panel-primary login-panel">
+        <div class="panel-body">
+            <form action="" method="POST">
+                <div class="form-group">
+                    <label class="control-label" for="username">帳號</label>
+                    <input type="text" class="form-control" name="username" id="username" value="{$credential.username}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="password">密碼</label>
+                    <input type="password" class="form-control" name="password" id="password" value="{$credential.password}" required>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">登入</button>
+                </div>
+            </form>
+            <hr />
+            <div>
+                <a class="btn btn-success btn-block btn-lg custom-alphabet-case" href="./processOpenid.php">OpenID 登入</a>
             </div>
-
-            <div class="form-group">
-                <label class="control-label" for="password">密碼</label>
-                <input type="password" class="form-control" name="password" id="password" value="{$credential.password}" required>
-            </div>
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-block btn-lg">登入</button>
-            </div>
-        </form>
-        <hr />
-        <div>
-            <a class="btn btn-success btn-block btn-lg custom-alphabet-case" href="./processOpenidLogin.php">OpenID 登入</a>
         </div>
     </div>
 </div>
 
 {/block}
 
-{block name=script}{/block}
+{block name="script"}{/block}

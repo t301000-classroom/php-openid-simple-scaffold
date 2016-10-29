@@ -13,11 +13,13 @@
         "vlucas/phpdotenv": "^2.4",
         "kounta/lightopenid": "^0.7.1",
         "smarty/smarty": "^3.1",
-        "robmorgan/phinx": "^0.6.4"
+        "robmorgan/phinx": "^0.6.4",
+        "nesbot/carbon": "^1.21"
     },
     "autoload": {
         "files": [
-            "helpers/my_helpers.php"
+            "helpers/my_helpers.php",
+            "helpers/user_helpers.php"
         ],
         "classmap": [
             "libs"

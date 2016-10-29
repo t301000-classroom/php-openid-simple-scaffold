@@ -21,12 +21,15 @@
             <ul class="nav navbar-nav navbar-right">
                 {if isset($currUser)}
                     {if $currUser.is_admin}
-                        <li><a href="{$home}/admin/index.php">管理</a></li>
+                        <li><a href="{$home}/admin/index.php">管理區</a></li>
                     {/if}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{$currUser.real_name} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{$home}/profile.php">我的帳號</a></li>
+                            {if isset($currUser.type) and $currUser.type == 'local'}
+                                <li><a href="{$home}/profile.php">帳號資訊</a></li>
+                            {/if}
+
                             <li><a href="{$home}/logout.php">登出</a></li>
                         </ul>
                     </li>
