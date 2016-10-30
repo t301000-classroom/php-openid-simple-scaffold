@@ -183,3 +183,44 @@ if (! function_exists('adminOnly')) {
         }
     }
 }
+
+/**
+ * 移除 query string 中不需要的參數，回傳新的 query string
+ *
+ * @param array $removeKeys
+ *
+ * @return string|null
+ */
+function cleanQueryString(array $removeKeys)
+{
+    $queryString = null;
+    if (isset($_SERVER['QUERY_STRING'])) {
+        parse_str($_SERVER['QUERY_STRING'], $queryArray);
+
+        foreach ($removeKeys as $key) {
+            unset($queryArray[$key]);
+        }
+
+        $queryString = http_build_query($queryArray);
+    }
+
+    return $queryString ? $queryString : null;
+}
+
+/**
+ * 產生重導向之 url or uri
+ *
+ * @param string $baseUrl
+ * @param string $queryString
+ *
+ * @return string
+ */
+function generateRedirectUrl($baseUrl = '', $queryString = '')
+{
+    $redirectTo = $baseUrl ? $baseUrl : $_SERVER['PHP_SELF'];
+    if ($queryString) {
+        $redirectTo .= '?' . $queryString;
+    }
+
+    return $redirectTo;
+}

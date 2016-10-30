@@ -20,8 +20,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
 
     case 'POST':
+        $op = isset($_POST['op']) ? $_POST['op'] : null;
         // 進行密碼變更程序
-        process();
+        process($op);
         break;
 }
 
@@ -37,6 +38,14 @@ function showPage()
 
     $id = ($_SESSION['user']['is_admin'] && isset($_GET['id'])) ? $_GET['id'] : $_SESSION['user']['id'];
 
+    // $queryString = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+    // if ($queryString) {
+    //     parse_str($queryString, $queryArray);
+    //     unset($queryArray['id']);
+    //     $_SERVER['QUERY_STRING'] = http_build_query($queryArray);
+    // }
+    $_SERVER['QUERY_STRING'] = cleanQueryString(['id']);
+
     $userData = getUserDataById($id);
     $smarty->assign('userData', $userData);
     $smarty->display('profile.html');
@@ -45,7 +54,24 @@ function showPage()
 /**
  * 進行密碼變更程序
  */
-function process()
+function process($op)
+{
+    switch ($op) {
+        case 'changePassword':
+            processChangePassword();
+            break;
+        case 'changeUserData':
+            processChangeUserData();
+            break;
+        default:
+            die();
+    }
+}
+
+/**
+ * 進行更改密碼程序
+ */
+function processChangePassword()
 {
     $newPassword = trim($_POST['newPassword']);
     $confirmPassword = trim($_POST['confirmPassword']);
@@ -59,10 +85,49 @@ function process()
         changePassword($newPassword, $_POST['id']);
     }
 
-    header('Location: ' . $_SERVER['PHP_SELF']);
+    header('Location: ' . $_SERVER['REQUEST_URI']);
     exit();
 }
 
+/**
+ * 進行更改 user data 程序
+ */
+function processChangeUserData()
+{
+    $data['real_name'] = $_POST['realName'];
+
+    changeUserData($data, $_POST['id']);
+
+    header('Location: ' . $_SERVER['REQUEST_URI']);
+    exit();
+}
+
+/**
+ * 執行 user data 變更
+ *
+ * @param array $data
+ * @param       $id
+ */
+function changeUserData(array $data, $id)
+{
+    global $mysqli;
+
+    $sql = "UPDATE users SET real_name = ?, updated_at = ? WHERE id = ?";
+    if ($stmt = $mysqli->prepare($sql)) {
+        $stmt->bind_param(
+            'sss',
+            $data['real_name'],
+            Carbon::now(),
+            $id
+        );
+        $stmt->execute();
+        $stmt->close();
+
+        $_SESSION['messages'] = [
+            ['type' => 'success', 'data' => '資料已更新']
+        ];
+    }
+}
 
 /**
  * 執行密碼變更
@@ -75,6 +140,7 @@ function process()
 function changePassword($password, $id)
 {
     global $mysqli;
+
     $sql = "UPDATE users SET password = ?, updated_at = ? WHERE id = ?";
     if ($stmt = $mysqli->prepare($sql)) {
         $stmt->bind_param(

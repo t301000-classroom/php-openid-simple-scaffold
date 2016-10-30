@@ -1,0 +1,25 @@
+<div class="form-horizontal my-col">
+    <fieldset>
+
+        <legend>單位資訊</legend>
+
+        <table class="table table-striped table-hover ">
+            <thead>
+            <tr>
+                <th>校代碼</th>
+                <th>學校</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {foreach $userData.openid_data as $k => $v}
+            <tr>
+                <td>{$k}</td>
+                <td>{$v.org_name}</td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+
+    </fieldset>
+</div>

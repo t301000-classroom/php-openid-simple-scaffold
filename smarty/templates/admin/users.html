@@ -2,11 +2,38 @@
 
 {block name="pageTitle" append} - 帳號管理{/block}
 
+{block name="subStyle"}
+<style type="text/css">
+#searchBtn {
+    margin-right: 5px;
+}
+
+.page-title {
+    margin-top: 0px;
+}
+</style>
+{/block}
+
 {block name="adminMain"}
 
 <div>
 
-    <table class="table table-hover ">
+    <form action="{$smarty.server.PHP_SELF}" method="GET" id="searchForm">
+        <div class="row">
+            <h4 class="pull-left page-title">帳號管理</h4>
+            <div class="col-md-6 col-md-offset-5 col-xs-7 col-xs-offset-4 input-group">
+                    <input type="text" class="form-control" value="{if isset($smarty.get.search)}{$smarty.get.search}{/if}" placeholder="請輸入關鍵字" name="search" id="searchInput">
+                    <span class="input-group-btn" id="search">
+                        <button class="btn btn-primary" type="submit" id="searchBtn">搜尋</button>
+                    </span>
+                    <span class="input-group-btn">
+                        <a class="btn btn-warning" href="{$smarty.server.PHP_SELF}">清除</a>
+                    </span>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-hover">
         <thead>
         <tr>
             <th>#</th>
@@ -17,70 +44,81 @@
         </tr>
         </thead>
         <tbody>
-        {foreach $users as $user}
-            <tr>
-                <td>{$user.id}</td>
-                <td>
-                    {$user.username}
-                    {if $user.isAdmin}
-                        &nbsp&nbsp<span class="glyphicon glyphicon-king" aria-hidden="true"></span>
-                    {/if}
-                </td>
-                <td>{$user.realName}</td>
-                <td>
-                    {if $user.isOpenid}
-                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                    {/if}
-                </td>
-                <td>
-                    <!-- 查看 user 帳號資訊 -->
-                    <a href="{$home}/profile.php?id={$user.id}" class="btn btn-success">
-                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-                    </a>
 
-                    {if $user.id > 1}
-                        <!-- 刪除 -->
-                        <button type="button" class="btn btn-danger"
-                                data-toggle="modal"
-                                data-target="#exampleModal"
-                                data-op="deleteUser"
-                                data-userid="{$user.id}"
-                                data-username="{$user.username}"
-                        >
-                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                        </button>
+        {if count($users) == 0}
+        <tr>
+            <td colspan="5" class="text-center text-danger">沒有資料</td>
+        </tr>
+        {else}
 
+            {foreach $users as $user}
+                <tr>
+                    <td>{$user.id}</td>
+                    <td>
+                        {$user.username}
                         {if $user.isAdmin}
-                            <!-- 提昇為管理員 -->
-                            <button type="button" class="btn btn-warning"
-                                    data-toggle="modal"
-                                    data-target="#exampleModal"
-                                    data-op="removeAdmin"
-                                    data-userid="{$user.id}"
-                                    data-username="{$user.username}"
-                            >
-                                <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
-                            </button>
-                        {else}
-                            <!-- 取消管理權 -->
-                            <button type="button" class="btn btn-warning"
-                                    data-toggle="modal"
-                                    data-target="#exampleModal"
-                                    data-op="addAdmin"
-                                    data-userid="{$user.id}"
-                                    data-username="{$user.username}"
-                            >
-                                <span class="glyphicon glyphicon-open" aria-hidden="true"></span>
-                            </button>
+                            &nbsp&nbsp<span class="glyphicon glyphicon-king" aria-hidden="true"></span>
                         {/if}
+                    </td>
+                    <td>{$user.realName}</td>
+                    <td>
+                        {if $user.isOpenid}
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        {/if}
+                    </td>
+                    <td>
+                        <div class="pull-right">
+                            {if $user.id > 1}
+                                <!-- 刪除 -->
+                                <button type="button" class="btn btn-danger"
+                                        data-toggle="modal"
+                                        data-target="#exampleModal"
+                                        data-op="deleteUser"
+                                        data-userid="{$user.id}"
+                                        data-username="{$user.username}"
+                                >
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                </button>
 
-                    {/if}
+                                {if $user.isAdmin}
+                                    <!-- 提昇為管理員 -->
+                                    <button type="button" class="btn btn-warning"
+                                            data-toggle="modal"
+                                            data-target="#exampleModal"
+                                            data-op="removeAdmin"
+                                            data-userid="{$user.id}"
+                                            data-username="{$user.username}"
+                                    >
+                                        <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+                                    </button>
+                                {else}
+                                    <!-- 取消管理權 -->
+                                    <button type="button" class="btn btn-warning"
+                                            data-toggle="modal"
+                                            data-target="#exampleModal"
+                                            data-op="addAdmin"
+                                            data-userid="{$user.id}"
+                                            data-username="{$user.username}"
+                                    >
+                                        <span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+                                    </button>
+                                {/if}
 
-                </td>
-            </tr>
-        {/foreach}
+                            {/if}
+                            <!-- 查看 user 帳號資訊 -->
+                            <a href="{$home}/profile.php?id={$user.id}{if isset($smarty.server.QUERY_STRING)}&{$smarty.server.QUERY_STRING}{/if}" class="btn btn-success">
+                                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            {/foreach}
+        {/if}
+
         </tbody>
     </table>
+
+    <div class="pull-right">{$paginator}</div>
 
 </div>
 
@@ -88,7 +126,7 @@
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-danger">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="exampleModalLabel"></h4>
             </div>
@@ -107,6 +145,7 @@
 {/block}
 
 {block name="script"}
+
 <script type="text/javascript">
     $('#exampleModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal
@@ -116,6 +155,10 @@
         var modal = $(this);
         
         var title, content;
+        // 處理 query string
+        var queryString = window.location.search.split('?')[1];
+        queryString = queryString ? '&' + queryString : '';
+
         switch (op) {
             case 'deleteUser':
                 title = '刪除帳號';
@@ -152,13 +195,26 @@
         }
         
         function deleteUser() {
-            window.location.href = '{$home}/admin/users.php?op=deleteUser&id=' + userid;
+            window.location.href = '{$home}/admin/users.php?op=deleteUser&id=' + userid + queryString;
         }
         
         function toggleAdmin() {
-            window.location.href = '{$home}/admin/users.php?op=toggleAdmin&id=' + userid;
+            window.location.href = '{$home}/admin/users.php?op=toggleAdmin&id=' + userid + queryString;
         }
     })
+</script>
+
+<script type="text/javascript">
+    /* 處理搜尋表單 */
+
+    var searchInput = $('#searchInput');
+    var searchForm = $('#searchForm');
+
+    searchForm.on('submit', function () {
+       if(searchInput.val().trim().length === 0) {
+           return false;
+       }
+    });
 </script>
 
 {/block}

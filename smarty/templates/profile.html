@@ -2,98 +2,31 @@
 
 {block name="pageTitle"}帳號資訊{/block}
 
+{block name="style"}
+<style type="text/css">
+    .pull-left {
+        padding-left: 15px;
+    }
+
+    .pull-right {
+        padding-right: 15px;
+    }
+</style>
+{/block}
+
 {block name="mainContent"}
 
 <div class="flex-row-container flex-wrap my-row">
     <div class="form-horizontal my-col">
-        <fieldset>
-
-            <legend>帳號資訊</legend>
-
-            <div class="form-group">
-                <label for="username" class="col-lg-2 control-label">帳號</label>
-                <div class="col-lg-10">
-                    <input type="text" class="form-control" id="username" value="{$userData.username}" disabled>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="realName" class="col-lg-2 control-label">姓名</label>
-                <div class="col-lg-10">
-                    <input type="text" class="form-control" id="realName" value="{$userData.real_name}" disabled>
-                </div>
-            </div>
-
-        </fieldset>
+        {include "partials/profile-user-info-form.html"}
     </div>
 
     <div class="form-horizontal my-col">
-        <form action="" method="POST">
-            <fieldset>
-
-                <legend>變更密碼</legend>
-
-                <div class="form-group">
-                    <label for="newPassword" class="col-lg-2 control-label">新密碼</label>
-                    <div class="col-lg-10">
-                        <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="請輸入新密碼">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="confirmPassword" class="col-lg-2 control-label">確認密碼</label>
-                    <div class="col-lg-10">
-                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="請再輸入一次新密碼">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="alert alert-danger" id="passwordError">兩次密碼不一樣</div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-lg-10 col-lg-offset-2">
-                        <button type="reset" class="btn btn-default" id="resetBtn">取消</button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">確定</button>
-
-                        {if isset($smarty.get.id)}
-                        <a href="{$home}/admin/users.php" class="btn btn-success" id="backBtn">回帳號管理</a>
-                        {/if}
-
-                        <input type="hidden" name="id" value="{$userData.id}">
-                    </div>
-                </div>
-
-            </fieldset>
-        </form>
+        {include "partials/profile-password-form.html"}
     </div>
 
     {if isset($userData.openid_data)}
-    <div class="form-horizontal my-col">
-        <fieldset>
-
-            <legend>單位資訊</legend>
-
-            <table class="table table-striped table-hover ">
-                <thead>
-                <tr>
-                    <th>校代碼</th>
-                    <th>學校</th>
-                </tr>
-                </thead>
-                <tbody>
-
-                {foreach $userData.openid_data as $k => $v}
-                <tr>
-                    <td>{$k}</td>
-                    <td>{$v.org_name}</td>
-                </tr>
-                {/foreach}
-                </tbody>
-            </table>
-
-        </fieldset>
-    </div>
+        {include "partials/profile-openid-auth-info-list.html"}
     {/if}
 </div>
 
@@ -103,31 +36,51 @@
 
 <script type="text/javascript">
     $("document").ready(function() {
+        var passwordForm = $('#passwordForm');
         var passwordInputs = $("input[type='password']");
         var passwordError = $('#passwordError');
-        var submitBtn = $('#submitBtn');
-        var resetBtn = $('#resetBtn');
-        var form = $('form');
+        var submitPasswordBtn = $('#submitPasswordBtn');
+        var resetPasswordBtn = $('#resetPasswordBtn');
 
-        // submit button disabled ?
+        var userDataForm = $('#userDataForm');
+        var realNameInput = $('#realName');
+        var submitInfoBtn = $('#submitInfoBtn');
+        var resetInfoBtn = $('#resetInfoBtn');
+
+        // if submit button disabled ?
         var disabled = true;
         // start check password and confirm password ?
         // 避免錯誤訊息太早出現
         var startCheck = false;
 
-        init();
+        passwordInitTask();
+
+        submitInfoBtn.attr('disabled', true);
+
+        realNameInput.on('input', function () {
+           if($(this).val().trim() == '') {
+               submitInfoBtn.attr('disabled', true);
+           } else {
+               submitInfoBtn.attr('disabled', false);
+           }
+        });
+
+        userDataForm.on('submit', function () {
+           submitInfoBtn.attr('disabled', true);
+        });
 
         passwordInputs.on('input', checkPassword);
 
-        resetBtn.on('click', init);
+        resetPasswordBtn.on('click', passwordInitTask);
 
-        form.on('submit', function() {
+        passwordForm.on('submit', function() {
+            submitPasswordBtn.attr('disabled', true);
             passwordError.hide();
         });
 
-        function init() {
+        function passwordInitTask() {
             passwordError.hide();
-            submitBtn.attr("disabled", true);
+            submitPasswordBtn.attr("disabled", true);
             startCheck = false;
         }
 
@@ -142,7 +95,7 @@
 
             if(startCheck) {
                 disabled = (val1 !== val2 || (val1 == '' && val2 == ''));
-                submitBtn.attr("disabled", disabled);
+                submitPasswordBtn.attr("disabled", disabled);
                 showError(val1, val2);
             }
         }

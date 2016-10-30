@@ -60,13 +60,3 @@ html, body {
         margin: 0 0 15px;
     }
 }
-
-.admin-main {
-    flex: 3;
-    padding: 0 10px;
-}
-
-.admin-aside {
-    flex: 1;
-    padding: 0 10px;
-}

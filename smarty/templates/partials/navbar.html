@@ -27,14 +27,14 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{$currUser.real_name} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             {if isset($currUser.type) and $currUser.type == 'local'}
-                                <li><a href="{$home}/profile.php">帳號資訊</a></li>
+                                <li><a href="{$home}/profile.php"><span class="glyphicon glyphicon-user"></span> 帳號資訊</a></li>
                             {/if}
 
-                            <li><a href="{$home}/logout.php">登出</a></li>
+                            <li><a href="{$home}/logout.php"><span class="glyphicon glyphicon-log-out"></span> 登出</a></li>
                         </ul>
                     </li>
                 {else}
-                    <li><a href="{$home}/login.php">登入</a></li>
+                    <li><a href="{$home}/login.php"><span class="glyphicon glyphicon-log-in"></span> 登入</a></li>
                 {/if}
             </ul>
         </div><!-- /.navbar-collapse -->

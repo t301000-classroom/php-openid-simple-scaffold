@@ -1,0 +1,40 @@
+<form action="" method="POST" id="userDataForm">
+
+    <fieldset>
+
+        <legend>帳號資訊</legend>
+
+        <div class="form-group">
+            <label for="username" class="col-lg-2 control-label">帳號</label>
+            <div class="col-lg-10">
+                <input type="text" class="form-control" id="username" value="{$userData.username}" disabled>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="realName" class="col-lg-2 control-label">姓名</label>
+            <div class="col-lg-10">
+                <input type="text" class="form-control" id="realName" name="realName" value="{$userData.real_name}" {if isset($userData.openid_data)}disabled{else}required{/if}>
+            </div>
+        </div>
+
+        <div class="form-group">
+            {if !isset($userData.openid_data)}
+            <div class="pull-left">
+                <button type="reset" class="btn btn-default" id="resetInfoBtn">取消</button>
+                <button type="submit" class="btn btn-primary" id="submitInfoBtn">確定</button>
+
+                <input type="hidden" name="id" value="{$userData.id}">
+                <input type="hidden" name="op" value="changeUserData">
+            </div>
+            {/if}
+
+            {if isset($smarty.get.id)}
+            <div class="pull-right">
+                <a href="{$home}/admin/users.php{if isset($smarty.server.QUERY_STRING)}?{$smarty.server.QUERY_STRING}{/if}" class="btn btn-success" id="backBtn">回帳號管理</a>
+            </div>
+            {/if}
+        </div>
+
+    </fieldset>
+</form>
