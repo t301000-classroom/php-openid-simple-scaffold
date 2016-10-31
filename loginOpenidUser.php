@@ -179,6 +179,10 @@ function getExistOpenidUser($data)
         $stmt->close();
     }
 
+    if ($user['id']) {
+        updateUserOpenidData($user['id'], $data['auth_info']);
+    }
+
     return $user['id'] ? $user : null;
 }
 
@@ -216,4 +220,22 @@ function createUser($data)
     }
 
     return $user;
+}
+
+/**
+ * 更新 user openid_data 欄位
+ *
+ * @param       $id         user id
+ * @param array $auth_info  user's openid auth_info
+ */
+function updateUserOpenidData($id, array $auth_info)
+{
+    global $mysqli;
+
+    $sql = "UPDATE users SET openid_data = ? WHERE id = ?";
+    if ($stmt = $mysqli->prepare($sql)) {
+        $stmt->bind_param('sd', json_encode($auth_info), $id);
+        $stmt->execute();
+        $stmt->close();
+    }
 }
