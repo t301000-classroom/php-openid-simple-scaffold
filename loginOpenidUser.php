@@ -195,7 +195,7 @@ function getExistOpenidUser($data)
  */
 function createUser($data)
 {
-    global $mysqli;
+    global $mysqli, $schoolId, $authInfo;
 
     $user = null;
     $sql = "INSERT INTO users (username, real_name, password, openid_data, created_at) VALUES (?, ?, ?, ?, ?)";
@@ -205,7 +205,7 @@ function createUser($data)
             $data['openid_username'],
             $data['real_name'],
             password_hash(str_replace('-', '', $data['birthday']), PASSWORD_DEFAULT),
-            json_encode($data['auth_info']),
+            json_encode([$schoolId => $authInfo]),
             Carbon::now()
         );
         $stmt->execute();
