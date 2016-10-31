@@ -45,17 +45,21 @@
         <tr>
             <th class="hidden-xs">
                 {if !isset($smarty.get.orderBy) or $smarty.get.orderBy == 'id'}
+                    {* 目前為排序欄位，顯示箭頭符號，表格欄位為一般文字 *}
                     #
                     {if isset($smarty.get.desc)}
+                        {* 目前為遞減 *}
                         <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=id">
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
                     {else}
+                        {* 目前為遞增 *}
                         <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=id&desc">
                             <span class="glyphicon glyphicon-chevron-up"></span>
                         </a>
                     {/if}
                 {else}
+                    {* 目前非排序欄位，不顯示箭頭符號，表格欄位為超連結，用於切換排序欄位，預設遞增 *}
                     <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=id">#</a>
                 {/if}
             </th>
