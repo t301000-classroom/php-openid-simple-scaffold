@@ -4,13 +4,17 @@
 
 {block name="subStyle"}
 <style type="text/css">
-#searchBtn {
-    margin-right: 5px;
-}
+    #searchBtn {
+        margin-right: 5px;
+    }
 
-.page-title {
-    margin-top: 0px;
-}
+    .page-title {
+        margin-top: 0px;
+    }
+
+    td.two-line {
+        height: 67px;
+    }
 </style>
 {/block}
 
@@ -33,39 +37,67 @@
         </div>
     </form>
 
+    {* 取得 query string，去除 orderBy、desc、page，用於排序，之後會附加新的 orderBy、desc *}
+    {$q=cleanQueryString(['orderBy', 'desc', 'page'])}
+
     <table class="table table-hover">
         <thead>
         <tr>
-            <th>#</th>
-            <th>帳號</th>
+            <th class="hidden-xs">
+                {if !isset($smarty.get.orderBy) or $smarty.get.orderBy == 'id'}
+                    #
+                    {if isset($smarty.get.desc)}
+                        <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=id">
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </a>
+                    {else}
+                        <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=id&desc">
+                            <span class="glyphicon glyphicon-chevron-up"></span>
+                        </a>
+                    {/if}
+                {else}
+                    <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=id">#</a>
+                {/if}
+            </th>
+            <th>
+                {if isset($smarty.get.orderBy) and $smarty.get.orderBy == 'username'}
+                    帳號
+                    {if isset($smarty.get.desc)}
+                        <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=username">
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </a>
+                    {else}
+                        <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=username&desc">
+                            <span class="glyphicon glyphicon-chevron-up"></span>
+                        </a>
+                    {/if}
+                {else}
+                    <a href="{$smarty.server.PHP_SELF}?{if $q}{$q}&{/if}orderBy=username">帳號</a>
+                {/if}
+            </th>
             <th>姓名</th>
-            <th>OpenID</th>
+            <th>校代碼 / 校名</th>
             <th>&nbsp;</th>
         </tr>
         </thead>
         <tbody>
 
-        {if count($users) == 0}
-        <tr>
-            <td colspan="5" class="text-center text-danger">沒有資料</td>
-        </tr>
-        {else}
-
+        {if count($users) > 0}
             {foreach $users as $user}
                 <tr>
-                    <td>{$user.id}</td>
+                    <td class="hidden-xs">{$user.id}</td>
                     <td>
-                        {$user.username}
+                        <!-- 查看 user 帳號資訊 -->
+                        <a href="{$home}/profile.php?id={$user.id}{if isset($smarty.server.QUERY_STRING)}&{$smarty.server.QUERY_STRING}{/if}">
+                            {$user.username}
+                        </a>
+
                         {if $user.isAdmin}
-                            &nbsp&nbsp<span class="glyphicon glyphicon-king" aria-hidden="true"></span>
+                            &nbsp&nbsp<span class="glyphicon glyphicon-king text-danger" aria-hidden="true"></span>
                         {/if}
                     </td>
                     <td>{$user.realName}</td>
-                    <td>
-                        {if $user.isOpenid}
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                        {/if}
-                    </td>
+                    <td class="two-line">{$user.schoolId}<br />{$user.schoolName}</td>
                     <td>
                         <div class="pull-right">
                             {if $user.id > 1}
@@ -105,10 +137,6 @@
                                 {/if}
 
                             {/if}
-                            <!-- 查看 user 帳號資訊 -->
-                            <a href="{$home}/profile.php?id={$user.id}{if isset($smarty.server.QUERY_STRING)}&{$smarty.server.QUERY_STRING}{/if}" class="btn btn-success">
-                                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-                            </a>
                         </div>
                     </td>
                 </tr>
@@ -117,6 +145,10 @@
 
         </tbody>
     </table>
+
+    {if count($users) == 0}
+    <div class="text-center text-warning"><h5 class="text-warning">沒有資料</h5></div>
+    {/if}
 
     <div class="pull-right">{$paginator}</div>
 

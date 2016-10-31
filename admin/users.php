@@ -32,11 +32,23 @@ function listUsers()
     global $smarty, $mysqli;
 
     // 取得資料總筆數
-    $result = $mysqli->query("SELECT count(id) FROM users");
-    $totalItems = ($result->fetch_row())[0];
-    $result->close();
+    $search = (isset($_GET['search'])) ? trim($_GET['search']) : '';
+    $sql = "SELECT count(id) FROM users ";
+    $sql .= ($search) ? "WHERE username LIKE ? OR real_name LIKE ? " : '';
+    if ($stmt = $mysqli->prepare($sql)) {
+        if ($search) {
+            $search = '%' . $search . '%';
+            $stmt->bind_param('ss', $search, $search);
+        }
+
+        $stmt->execute();
+        $stmt->bind_result($totalItems);
+        $stmt->fetch();
+        $stmt->close();
+    }
+
     // 每頁幾筆
-    $itemsPerPage = 10;
+    $itemsPerPage = isset($_GET['pageSize']) ? $_GET['pageSize'] : 10;
     // 目前頁數
     $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
     // 搜尋關鍵字
@@ -64,8 +76,10 @@ function listUsers()
  */
 function generatePaginatorUrlPattern($search = '')
 {
-    $urlPattern = $_SERVER['PHP_SELF'];
-    $urlPattern .= ($search) ? "?search={$search}&" : '?';
+    // $urlPattern = $_SERVER['PHP_SELF'];
+    $urlPattern = $_SERVER['PHP_SELF'] . '?';
+    $urlPattern .= ($queryString = cleanQueryString(['page'])) ? $queryString . '&' : '';
+    // $urlPattern .= ($search) ? "?search={$search}&" : '?';
     $urlPattern .= 'page=(:num)';
 
     return $urlPattern;
@@ -116,12 +130,15 @@ function getUsers($offset = 0, $limit = 10)
     $users=[];
 
     $search = (isset($_GET['search'])) ? trim($_GET['search']) : '';
+    $orderBy = (isset($_GET['orderBy'])) ? trim($_GET['orderBy']) : 'id';
+    $desc = (isset($_GET['desc'])) ? 'DESC' : '';
+
 
     $sql = "SELECT 
               id, username, real_name, is_admin, openid_data
             FROM users ";
     $sql .= ($search) ? "WHERE username LIKE ? OR real_name LIKE ? " : '';
-    $sql .= "ORDER BY id LIMIT ? OFFSET ?";
+    $sql .= "ORDER BY $orderBy $desc LIMIT ? OFFSET ?";
     if ($stmt = $mysqli->prepare($sql)) {
         if ($search) {
             $search = '%' . $search . '%';
@@ -134,8 +151,10 @@ function getUsers($offset = 0, $limit = 10)
         $stmt->bind_result($id, $username, $realName, $isAdmin, $openid_data);
 
         while ($stmt->fetch()) {
-            $isOpenid = ($openid_data) ? true : false;
-            $users[] = compact('id', 'username', 'realName', 'isAdmin', 'isOpenid');
+            $openid_data = json_decode($openid_data, true);
+            $schoolId = $openid_data ? key($openid_data) : '';
+            $schoolName = $openid_data[$schoolId]['org_name'];
+            $users[] = compact('id', 'username', 'realName', 'isAdmin', 'schoolId', 'schoolName');
         }
 
         $stmt->close();
