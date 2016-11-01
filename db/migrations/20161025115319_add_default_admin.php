@@ -40,7 +40,7 @@ class AddDefaultAdmin extends AbstractMigration
             'is_admin' => 1,
             'created_at' => Carbon::now()
         ];
-
+        $this->execute('TRUNCATE TABLE users');
         $table = $this->table('users');
         $table->insert($admin)
             ->saveData();
