@@ -29,6 +29,7 @@ if ($mysqli->connect_error) {
 }
 $mysqli->set_charset(DB_CHARSET);
 
+/* 依環境變數決定是否啟用 debug bar */
 define('DEBUG', env('DEBUG', false));
 if (DEBUG) {
     Tracy::instance();
