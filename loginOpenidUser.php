@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 unset($_SESSION['tmpOpenidUserData']);
 
 /* 檢查是否允許登入 */
-if (!canLogin($schoolId)) {
+if (!canLogin($schoolId, $authInfo)) {
     // 不允許登入，轉回登入頁
     header('Location: ./login.php');
     exit();
@@ -200,13 +200,17 @@ function createUser($data)
     $user = null;
     $sql = "INSERT INTO users (username, real_name, password, openid_data, created_at) VALUES (?, ?, ?, ?, ?)";
     if ($stmt = $mysqli->prepare($sql)) {
+        $birthday = password_hash(str_replace('-', '', $data['birthday']), PASSWORD_DEFAULT);
+        $openid_data = json_encode([$schoolId => $authInfo]);
+        $created_at = Carbon::now();
+
         $stmt->bind_param(
             'sssss',
             $data['openid_username'],
             $data['real_name'],
-            password_hash(str_replace('-', '', $data['birthday']), PASSWORD_DEFAULT),
-            json_encode([$schoolId => $authInfo]),
-            Carbon::now()
+            $birthday,
+            $openid_data,
+            $created_at
         );
         $stmt->execute();
         $id = $stmt->insert_id;

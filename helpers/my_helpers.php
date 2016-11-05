@@ -1,5 +1,7 @@
 <?php
 
+use Recca0120\LaravelTracy\Tracy;
+
 if (! function_exists('env')) {
     /**
      * Gets the value of an environment variable. Supports boolean, empty and null.
@@ -93,6 +95,13 @@ if (! function_exists('ends_with')) {
 
         return false;
     }
+}
+
+function sql($sql)
+{
+    $tracy = Tracy::instance();
+    $databasePanel = $tracy->getPanel('database');
+    $databasePanel->logQuery($sql);
 }
 
 /********** 自定義輔助函數 **********/

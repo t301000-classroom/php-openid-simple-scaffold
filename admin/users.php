@@ -40,7 +40,6 @@ function listUsers()
             $search = '%' . $search . '%';
             $stmt->bind_param('ss', $search, $search);
         }
-
         $stmt->execute();
         $stmt->bind_result($totalItems);
         $stmt->fetch();

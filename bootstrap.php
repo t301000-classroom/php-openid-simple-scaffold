@@ -1,6 +1,7 @@
 <?php
 
 use Dotenv\Dotenv;
+use Recca0120\LaravelTracy\Tracy;
 
 date_default_timezone_set('Asia/Taipei');
 
@@ -27,6 +28,11 @@ if ($mysqli->connect_error) {
     die('無法連上資料庫(' . $mysqli->connect_error . ') ' . $mysqli->connect_error);
 }
 $mysqli->set_charset(DB_CHARSET);
+
+define('DEBUG', env('DEBUG', false));
+if (DEBUG) {
+    Tracy::instance();
+}
 
 /* Smarty 設定 */
 // 定義 smarty 相關目錄之根路徑
