@@ -1,0 +1,145 @@
+{extends "admin/master.html"}
+
+{block name='pageTitle' append} - OpenID 登入規則{/block}
+
+{block name="subStyle"}
+<style type="text/css">
+    td ul {
+        padding-left: 0;
+        list-style: none;
+    }
+</style>
+{/block}
+
+{block name="adminMain"}
+
+    <div class="flex-row-container flex-page-header">
+        <h4>OpenID 登入規則</h4>
+        <a class="btn btn-success" href="{$smarty.server.PHP_SELF}?op=addRule">
+            <span class="glyphicon glyphicon-plus"></span> 新增
+        </a>
+    </div>
+
+    <div class="flex-row-container">
+        {if count($rules) > 0}
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>校代碼</th>
+                    <th>規則</th>
+                    <th>優先序</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {foreach $rules as $rule}
+                {$data = null}
+                <tr>
+                    <td id="id-{$rule.id}">{$rule.school_id}</td>
+                    <td id="rule-{$rule.id}">
+                        {if isset($rule.rule)}
+                            {$data = $rule.rule}
+
+                            <ul>
+                            {if isset($data.schoolName)}
+                                <li>學校：{$data.schoolName}</li>
+                            {/if}
+
+                            {if isset($data.role)}
+                                <li>身分：
+                                {if is_array($data.role)}
+                                    {implode(',', $data.role)}
+                                {else}
+                                    {$data.role}
+                                {/if}
+                                </li>
+                            {/if}
+
+                            {if isset($data.title)}
+                                <li>職務：
+                                {if is_array($data.title)}
+                                    {implode(',', $data.title)}
+                                {else}
+                                    {$data.title}
+                                {/if}
+                                </li>
+                            {/if}
+
+                            {if isset($data.groups)}
+                                <li>職稱：
+                                {if is_array($data.groups)}
+                                    {implode(',', $data.groups)}
+                                {else}
+                                    {$data.groups}
+                                {/if}
+                                </li>
+                            {/if}
+                            </ul>
+
+                        {/if}
+                    </td>
+                    <td>{$rule.priority}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger"
+                                data-toggle="modal"
+                                data-target="#exampleModal"
+                                data-op="deleteRule"
+                                data-ruleid="{$rule.id}"
+                        >
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+                {/foreach}
+                </tbody>
+            </table>
+        {else}
+            <h5>目前還沒有設定規則</h5>
+        {/if}
+    </div>
+
+    {include 'admin/partials/modal.html'}
+
+{/block}
+
+{block name="script"}
+<script type="text/javascript">
+    $('#exampleModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var op = button.data('op'); // Extract info from data-* attributes
+        var ruleid = button.data('ruleid'); // Extract info from data-* attributes
+        var modal = $(this);
+        var school_id = $('#id-' + ruleid);
+        var rule = $('#rule-' + ruleid);
+
+        var title, content;
+
+        switch (op) {
+            case 'deleteRule':
+                title = '刪除規則';
+                content = '確定刪除這條規則？<br /><br />';
+                content += '校代碼：' + school_id.html() + '<br />';
+                content += '規則：<br />' + rule.html();
+                break;
+        }
+
+        modal.find('.modal-title').text(title);
+        modal.find('.modal-body h4').html(content);
+
+        modal.find('#doit').on('click', doIt);
+
+        function doIt() {
+            switch (op) {
+                case 'deleteRule':
+                    deleteRule();
+                    break;
+            }
+        }
+
+        function deleteRule() {
+            window.location.href = '{$home}/admin/openidLoginRules.php?op=deleteRule&id=' + ruleid;
+        }
+    })
+</script>
+{/block}

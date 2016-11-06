@@ -1,0 +1,51 @@
+{extends "admin/master.html"}
+
+{block name="pageTitle"} - 新增 OpenID 登入規則{/block}
+
+{block name="subStyle"}
+<style type="text/css">
+    .pull-right-btn {
+        margin-left: 5px;
+    }
+</style>
+{/block}
+
+{block name="adminMain"}
+<div class="flex-row-container flex-page-header">
+    <h4>新增 OpenID 登入規則</h4>
+</div>
+<form action="" method="POST" class="clearfix">
+    <div class="form-group">
+        <label for="schoolId">校代碼</label>
+        <input type="text" class="form-control" name="rule[schoolId]" id="schoolId" placeholder="014569">
+    </div>
+    <div class="form-group">
+        <label for="schoolName">學校全銜</label>
+        <input type="text" class="form-control" name="rule[schoolName]" id="schoolName" placeholder="新北市立育林國民中學">
+    </div>
+    <div class="form-group">
+        <label for="role">身分</label>
+        <input type="text" class="form-control" name="rule[role]" id="role" placeholder="2 個以上請以逗點（,）隔開">
+    </div>
+    <div class="form-group">
+        <label for="title">職務</label>
+        <input type="text" class="form-control" name="rule[title]" id="title" placeholder="2 個以上請以逗點（,）隔開">
+    </div>
+    <div class="form-group">
+        <label for="groups">職稱</label>
+        <input type="text" class="form-control" name="rule[groups]" id="groups" placeholder="2 個以上請以逗點（,）隔開">
+    </div>
+    <div class="form-group">
+        <label for="priority">優先序</label>
+        <input type="number" class="form-control" name="rule[priority]" id="priority" placeholder="0~255"
+               value="1" min="0" max="255" required>
+    </div>
+    <button class="btn btn-warning pull-right pull-right-btn" type="reset" id="resetBtn">清除</button>
+    <button class="btn btn-primary pull-right pull-right-btn" type="submit" id="createBtn">確定</button>
+    <input type="hidden" name="op" value="createRule">
+</form>
+
+<p><a href="https://openid.ntpc.edu.tw/home/about/" target="_blank">新北市 OpenID 欄位規格說明</a></p>
+{/block}
+
+{block name="script"}{/block}

@@ -12,7 +12,7 @@ $dotenv = new Dotenv(__DIR__);
 $dotenv->load();
 
 /* 網站首頁 url */
-define('SITE_URL', env('SITE_URL', $_SERVER['HTTP_HOST']));
+define('SITE_URL', env('SITE_URL', isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost'));
 
 /* 定義資料庫連線參數 */
 define('DB_HOST', env('DB_HOST', 'localhost'));
