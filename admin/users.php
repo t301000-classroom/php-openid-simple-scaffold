@@ -151,8 +151,8 @@ function getUsers($offset = 0, $limit = 10)
 
         while ($stmt->fetch()) {
             $openid_data = json_decode($openid_data, true);
-            $schoolId = $openid_data ? key($openid_data) : '';
-            $schoolName = $openid_data[$schoolId]['org_name'];
+            $schoolId = $openid_data ? $openid_data['id'] : '';
+            $schoolName = $openid_data['name'];
             $users[] = compact('id', 'username', 'realName', 'isAdmin', 'schoolId', 'schoolName');
         }
 

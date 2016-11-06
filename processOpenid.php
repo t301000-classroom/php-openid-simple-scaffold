@@ -71,13 +71,14 @@ switch ($openid->mode) {
  *   'gender' => '男',
  *   'birthday' => '1973-08-14',
  *   'email' => 'xxxxxx@apps.ntpc.edu.tw',
- *   'org_name_short' => '中正國中',
+ *   'schoolNameShort' => '中正國中',
  *   'grade' => '00',
  *   'class' => '00',
  *   'num' => '00',
  *   'auth_info' => [
- *      '014569' => [
- *          'org_name' => '新北市立中正國民中學',
+ *      [
+ *          'id' => '014569',
+ *          'name' => '新北市立中正國民中學',
  *          'role' => '教師',
  *          'title' => '專任教師',
  *          'groups' => ['導師']
@@ -109,18 +110,19 @@ function getUserData(LightOpenID $openid)
         $user_data['gender'] = ($attr['person/gender'] == 'M') ? '男' : '女';
         $user_data['birthday'] = $attr['birthDate'];
         $user_data['email'] = $attr['contact/email'];
-        $user_data['org_name_short'] = $attr['contact/country/home'];
+        $user_data['schoolNameShort'] = $attr['contact/country/home'];
         $user_data['grade'] = substr($attr['pref/language'], 0, 2);
         $user_data['class'] = substr($attr['pref/language'], 2, 2);
         $user_data['num'] = substr($attr['pref/language'], 4, 2);
-        foreach (json_decode($attr['pref/timezone']) as $item) {
-            $user_data['auth_info'][$item->id] = [
-                'org_name' => $item->name,
-                'role' => $item->role,
-                'title' => $item->title,
-                'groups' => $item->groups
-            ];
-        }
+        // foreach (json_decode($attr['pref/timezone']) as $item) {
+        //     $user_data['auth_info'][$item->id] = [
+        //         'schoolName' => $item->name,
+        //         'role' => $item->role,
+        //         'title' => $item->title,
+        //         'groups' => $item->groups
+        //     ];
+        // }
+        $user_data['auth_info'] = json_decode($attr['pref/timezone'], true);
         // var_dump($user_data);
     }
 

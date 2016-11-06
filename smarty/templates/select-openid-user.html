@@ -9,18 +9,18 @@
     <form action="" method="POST">
         <table class="table table-hover">
 
-            {foreach $authInfos as $schoolId => $data}
+            {foreach $authInfos as $data}
             <tr>
-                <td>{$schoolId}</td>
-                <td>{$data.org_name}</td>
+                <td>{$data.id}</td>
+                <td>{$data.name}</td>
                 <td>{$data.role}</td>
                 <td>{$data.title}</td>
                 <td>{implode(", ",$data.groups)}</td>
                 <td class="text-center">
                     {if $data@first}
-                        <input type="radio" name="schoolId" value="{$schoolId}" checked>
+                        <input type="radio" name="index" value="{$data@key}" checked>
                     {else}
-                        <input type="radio" name="schoolId" value="{$schoolId}">
+                        <input type="radio" name="index" value="{$data@key}">
                     {/if}
                 </td>
             </tr>

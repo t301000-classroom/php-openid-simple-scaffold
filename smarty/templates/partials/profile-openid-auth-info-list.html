@@ -10,14 +10,12 @@
                 <th>學校</th>
             </tr>
             </thead>
-            <tbody>
 
-            {foreach $userData.openid_data as $k => $v}
+            <tbody>
             <tr>
-                <td>{$k}</td>
-                <td>{$v.org_name}</td>
+                <td>{$userData.openid_data.id}</td>
+                <td>{$userData.openid_data.name}</td>
             </tr>
-            {/foreach}
             </tbody>
         </table>
 

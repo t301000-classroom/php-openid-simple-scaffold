@@ -104,7 +104,7 @@ function getSingleRuleById($id)
         }
 
         // 取得缺少的元素 key 名
-        $fields = ['schoolName', 'role', 'title', 'groups'];
+        $fields = ['name', 'role', 'title', 'groups'];
         $fieldsToFill = array_diff($fields, array_keys($rule));
         // 將缺少的欄位補為空字串
         foreach ($fieldsToFill as $field) {
@@ -132,7 +132,7 @@ function showRuleForm($rule = null)
         $rule = [
             // 'id' => 1,
             'schoolId' => '',
-            'schoolName' => '',
+            'name' => '',
             'role' => '',
             'title' => '',
             'groups' => '',
@@ -153,7 +153,7 @@ function showRuleForm($rule = null)
  */
 function collectData(array $data)
 {
-    $fields = ['id', 'schoolId', 'schoolName', 'role', 'title', 'groups', 'priority'];
+    $fields = ['id', 'schoolId', 'name', 'role', 'title', 'groups', 'priority'];
     // 允許多個值的欄位
     $multiValuesFields = ['role', 'title', 'groups'];
     $rule = [];

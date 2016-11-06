@@ -9,43 +9,45 @@ guestOnly();
 // dd($_SESSION['tmpOpenidUserData']);
 
 // 正式 code
-$openidUserData = $_SESSION['tmpOpenidUserData'];
+// $openidUserData = $_SESSION['tmpOpenidUserData'];
 
 /* mock code */
-// $user_data = [
-//     'openid_username' => 'openiduser',
-//     'id_code' => '5EE2EFCE20722348C2E27AA5E21F60FE69FA11651069288F6F6F264BAF4620FB',
-//     'real_name' => '王小明',
-//     'nick_name' => '王小明',
-//     'gender' => '男',
-//     'birthday' => '1973-08-14',
-//     'email' => 'xxxxxx@apps.ntpc.edu.tw',
-//     'org_name_short' => '中正國中',
-//     'grade' => '00',
-//     'class' => '00',
-//     'num' => '00',
-//     'auth_info' => [
-//         // '014569' => [
-//         //     'org_name' => '新北市立中正國民中學',
-//         //     'role' => '教師',
-//         //     'title' => '專任教師',
-//         //     'groups' => ['導師']
-//         // ],
-//         '014568' => [
-//             'org_name' => '新北市立xx國民中學',
-//             'role' => '教師',
-//             'title' => '專任教師',
-//             'groups' => ['導師']
-//         ]
-//     ]
-// ];
-// $openidUserData = $user_data;
+$user_data = [
+    'openid_username' => 'openiduser',
+    'id_code' => '5EE2EFCE20722348C2E27AA5E21F60FE69FA11651069288F6F6F264BAF4620FB',
+    'real_name' => '王小明',
+    'nick_name' => '王小明',
+    'gender' => '男',
+    'birthday' => '1973-08-14',
+    'email' => 'xxxxxx@apps.ntpc.edu.tw',
+    'schoolNameShort' => '中正國中',
+    'grade' => '00',
+    'class' => '00',
+    'num' => '00',
+    'auth_info' => [
+        [
+            'id' => '014568',
+            'name' => '新北市立中正國民中學',
+            'role' => '教師',
+            'title' => '專任教師',
+            'groups' => ['導師']
+        ],
+        [
+            'id' => '014569',
+            'name' => '新北市立xx國民中學',
+            'role' => '教師',
+            'title' => '專任教師',
+            'groups' => ['導師']
+        ]
+    ]
+];
+$openidUserData = $user_data;
 /* mock code end */
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 多筆授權資訊，選擇後
-    $schoolId = $_POST['schoolId'];
-    $authInfo = $openidUserData['auth_info'][$schoolId];
+    $index = (int)$_POST['index'];
+    $authInfo = $openidUserData['auth_info'][$index];
 } else {
     if (count($openidUserData['auth_info']) > 1) {
         // 多筆授權資訊
@@ -54,12 +56,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } else {
         // 只有一筆授權資訊
-        $schoolId = key($openidUserData['auth_info']);
-        $authInfo = $openidUserData['auth_info'][$schoolId];
+        // $schoolId = key($openidUserData['auth_info']);
+        // $authInfo = $openidUserData['auth_info'][$schoolId];
+        $authInfo = $openidUserData['auth_info'][0];
     }
 }
+$schoolId = $authInfo['id'];
+
+// dd(compact('schoolId', 'authInfo'));
 
 /* 至此已取得 一筆 校代碼與相應之授權資訊 */
+/**
+ * example:
+ * $authInfo = [
+ *      'id' => '014569',
+ *      'name' => '新北市立xx國民中學',
+ *      'role' => '教師',
+ *      'title' => '專任教師',
+ *      'groups' => ['導師']
+ *  ]
+ */
 // dd(compact('schoolId', 'authInfo'));
 unset($_SESSION['tmpOpenidUserData']);
 
@@ -121,9 +137,73 @@ function showSelectUser($authInfos)
  */
 function canLogin($schoolId, $authInfo)
 {
-    // 檢查校代碼
-    $result = checkSchoolId($schoolId);
+    // 取得規則
+    $rules = getRulesBySchoolId($schoolId);
 
+    if (empty($rules)) {
+        // 若為空陣列則為不設限制，直接回傳 true
+        return true;
+    }
+    // 檢查校代碼
+    // $result = checkSchoolId($schoolId);
+
+    $result = check($rules, $authInfo);
+    return $result;
+}
+
+/**
+ * 以校代碼取得登入規則，包含不限制校代碼的規則（排在後面）
+ *
+ * @param $schoolId
+ *
+ * @return array
+ */
+function getRulesBySchoolId($schoolId)
+{
+    global $mysqli;
+
+    $rules = [];
+    // note: school_id DESC 是為了將 school_id 為 *（不限制）的紀錄排到後面
+    $sql = sprintf("SELECT school_id, rule FROM openid_rules WHERE school_id IN ('*', %s) ORDER BY school_id DESC, priority DESC", $schoolId);
+    $result = $mysqli->query($sql);
+
+    while ($rule = $result->fetch_assoc()) {
+        $rule['rule'] = json_decode($rule['rule'], true);
+        $rules[] = $rule;
+    }
+
+    return $rules;
+}
+
+/**
+ * 檢查登入條件，first match
+ *
+ * @param $rules
+ * @param $authInfo
+ *
+ * @return bool
+ */
+function check($rules, $authInfo)
+{
+    // return true;
+
+    $result = false;
+    // dd($rules[0]['rule']);
+    foreach ($rules as $rule) {
+        $condition = $rule['rule'];
+        if (empty($condition)) {
+            // 條件為空，跳過，進行下一筆規則檢查
+            continue;
+        }
+        // 條件不為空，進行檢查
+        // 一旦檢查通過，$result=true，中止檢查
+        foreach ($condition as $k => $v) {
+            if (is_array($v)) {
+
+            }
+        }
+    }
+    die();
     return $result;
 }
 
@@ -167,7 +247,7 @@ function getOrCreateUser($data)
  */
 function getExistOpenidUser($data)
 {
-    global $mysqli;
+    global $mysqli, $authInfo;
 
     $user = null;
     $sql = "SELECT id, real_name, is_admin from users where username = ?";
@@ -180,7 +260,7 @@ function getExistOpenidUser($data)
     }
 
     if ($user['id']) {
-        updateUserOpenidData($user['id'], $data['auth_info']);
+        updateUserOpenidData($user['id'], $authInfo);
     }
 
     return $user['id'] ? $user : null;
@@ -201,7 +281,8 @@ function createUser($data)
     $sql = "INSERT INTO users (username, real_name, password, openid_data, created_at) VALUES (?, ?, ?, ?, ?)";
     if ($stmt = $mysqli->prepare($sql)) {
         $birthday = password_hash(str_replace('-', '', $data['birthday']), PASSWORD_DEFAULT);
-        $openid_data = json_encode([$schoolId => $authInfo]);
+        // $openid_data = json_encode([$schoolId => $authInfo]);
+        $openid_data = json_encode($authInfo);
         $created_at = Carbon::now();
 
         $stmt->bind_param(
