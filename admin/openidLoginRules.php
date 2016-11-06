@@ -9,12 +9,23 @@ $op = isset($_REQUEST['op']) ? $_REQUEST['op'] : '';
 
 switch ($op) {
     case 'addRule':
-        showAddRuleForm();
+        showRuleForm();
         break;
 
     case 'createRule':
         $rule = collectData($_POST['rule']);
         createRule($rule);
+        break;
+
+    case 'editRule':
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $rule = getSingleRuleById($id);
+        showRuleForm($rule);
+        break;
+
+    case 'updateRule':
+        $rule = collectData($_POST['rule']);
+        updateRule($rule);
         break;
 
     case 'deleteRule':
@@ -64,12 +75,72 @@ function getAllOpenidLoginRules()
 }
 
 /**
- * 顯示新增規則表單
+ * 以 id 取得一條規則
+ *
+ * @param $id
+ *
+ * @return null|array
  */
-function showAddRuleForm()
+function getSingleRuleById($id)
+{
+    global $mysqli;
+
+    $rule = null;
+
+    $sql = "SELECT school_id, rule, priority FROM openid_rules WHERE id = ?";
+    if ($stmt = $mysqli->prepare($sql)) {
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $stmt->bind_result($school_id, $rule_db, $priority);
+        $stmt->fetch();
+
+        $rule = json_decode($rule_db, true);
+
+        // 將值為陣列的轉為逗點分隔字串
+        foreach ($rule as $key => $value) {
+            if (is_array($value)) {
+                $rule[$key] = implode(',', $value);
+            }
+        }
+
+        // 取得缺少的元素 key 名
+        $fields = ['schoolName', 'role', 'title', 'groups'];
+        $fieldsToFill = array_diff($fields, array_keys($rule));
+        // 將缺少的欄位補為空字串
+        foreach ($fieldsToFill as $field) {
+            $rule[$field] = '';
+        }
+        // 補上其他欄位
+        $rule['id'] = $id;
+        $rule['schoolId'] = $school_id;
+        $rule['priority'] = $priority;
+    }
+
+    return $rule;
+}
+
+/**
+ * 顯示新增 / 編輯規則表單
+ *
+ * @param null|array $rule
+ */
+function showRuleForm($rule = null)
 {
     global $smarty;
 
+    if (is_null($rule)) {
+        $rule = [
+            // 'id' => 1,
+            'schoolId' => '',
+            'schoolName' => '',
+            'role' => '',
+            'title' => '',
+            'groups' => '',
+            'priority' => 1
+        ];
+    }
+
+    $smarty->assign('rule', $rule);
     $smarty->display('admin/openid-login-rule-form.html');
 }
 
@@ -82,7 +153,9 @@ function showAddRuleForm()
  */
 function collectData(array $data)
 {
-    $fields = ['schoolId', 'schoolName', 'role', 'title', 'groups', 'priority'];
+    $fields = ['id', 'schoolId', 'schoolName', 'role', 'title', 'groups', 'priority'];
+    // 允許多個值的欄位
+    $multiValuesFields = ['role', 'title', 'groups'];
     $rule = [];
 
     foreach ($fields as $field) {
@@ -91,7 +164,7 @@ function collectData(array $data)
         }
 
         $value = trim($data[$field]);
-        if (substr_count($value, ',') > 0) {
+        if (in_array($field, $multiValuesFields) and substr_count($value, ',') > 0) {
             // 若有 2 個以上的值，則拆成陣列
             $rule[$field] = explode(',', $value);
         } else {
@@ -113,16 +186,50 @@ function createRule(array $rule)
 
     $schoolId = isset($rule['schoolId']) ? $rule['schoolId'] : '*';
     $priority = isset($rule['priority']) ? (int)$rule['priority'] : 1;
+    unset($rule['schoolId']);
+    unset($rule['priority']);
     $rule = json_encode($rule);
 
     $sql = "INSERT INTO openid_rules (school_id, rule, priority) VALUES (?, ?, ?)";
     if ($stmt = $mysqli->prepare($sql)) {
-        $stmt->bind_param('ssd', $schoolId, $rule, $priority);
+        $stmt->bind_param('ssi', $schoolId, $rule, $priority);
         $stmt->execute();
         $stmt->close();
 
         $_SESSION['messages'] = [
             ['type' => 'success', 'data' => '新增規則完成']
+        ];
+    }
+
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit();
+}
+
+/**
+ * 執行更新規則
+ *
+ * @param $rule
+ */
+function updateRule($rule)
+{
+    global $mysqli;
+
+    $id = (int)$rule['id'];
+    $schoolId = isset($rule['schoolId']) ? $rule['schoolId'] : '*';
+    $priority = isset($rule['priority']) ? (int)$rule['priority'] : 1;
+    unset($rule['id']);
+    unset($rule['schoolId']);
+    unset($rule['priority']);
+    $rule = json_encode($rule);
+
+    $sql = "UPDATE openid_rules SET school_id = ?, rule = ?, priority = ? WHERE id = ?";
+    if ($stmt = $mysqli->prepare($sql)) {
+        $stmt->bind_param('ssii', $schoolId, $rule, $priority, $id);
+        $stmt->execute();
+        $stmt->close();
+
+        $_SESSION['messages'] = [
+            ['type' => 'success', 'data' => '規則已更新']
         ];
     }
 
