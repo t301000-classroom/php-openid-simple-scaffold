@@ -199,11 +199,18 @@ function check($rules, $authInfo)
         // 一旦檢查通過，$result=true，中止檢查
         foreach ($condition as $k => $v) {
             if (is_array($v)) {
+                // 條件值為陣列
+            } else {
+                // 條件值為字串
+            }
 
+            if ($result) {
+                // 通過檢查，跳出 2 層
+                break 2;
             }
         }
     }
-    die();
+    die(var_dump($result));
     return $result;
 }
 
