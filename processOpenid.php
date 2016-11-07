@@ -86,12 +86,13 @@ switch ($openid->mode) {
  *   ]
  * ];
  *
- * @param LightOpenID $openid
  *
  * @return null|array
  */
-function getUserData(LightOpenID $openid)
+function getUserData()
 {
+    global $openid;
+
     $user_data = null;
 
     if ($openid->validate()) {
@@ -131,11 +132,11 @@ function getUserData(LightOpenID $openid)
 
 /**
  * 啟動 OpenID 認證流程
- *
- * @param LightOpenID $openid
  */
-function startOpenidAuth(LightOpenID $openid)
+function startOpenidAuth()
 {
+    global $openid;
+
     $openid->identity = 'http://openid.ntpc.edu.tw/';
     $openid->required = OpenidConfig::$required;
 

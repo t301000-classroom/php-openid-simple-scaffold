@@ -9,10 +9,10 @@ guestOnly();
 // dd($_SESSION['tmpOpenidUserData']);
 
 // 正式 code
-// $openidUserData = $_SESSION['tmpOpenidUserData'];
+$openidUserData = $_SESSION['tmpOpenidUserData'];
 
 /* mock code */
-$user_data = [
+/*$user_data = [
     'openid_username' => 'openiduser',
     'id_code' => '5EE2EFCE20722348C2E27AA5E21F60FE69FA11651069288F6F6F264BAF4620FB',
     'real_name' => '王小明',
@@ -33,6 +33,13 @@ $user_data = [
             'groups' => ['導師']
         ],
         [
+            'id' => '014568',
+            'name' => '新北市立中正國民中學',
+            'role' => '家長',
+            'title' => '專任教師',
+            'groups' => ['教官']
+        ],
+        [
             'id' => '014569',
             'name' => '新北市立xx國民中學',
             'role' => '教師',
@@ -41,7 +48,7 @@ $user_data = [
         ]
     ]
 ];
-$openidUserData = $user_data;
+$openidUserData = $user_data;*/
 /* mock code end */
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -82,6 +89,9 @@ unset($_SESSION['tmpOpenidUserData']);
 /* 檢查是否允許登入 */
 if (!canLogin($schoolId, $authInfo)) {
     // 不允許登入，轉回登入頁
+    $_SESSION['messages'] = [
+        ['type' => 'danger', 'data' => '不允許登入']
+    ];
     header('Location: ./login.php');
     exit();
 }
@@ -141,13 +151,13 @@ function canLogin($schoolId, $authInfo)
     $rules = getRulesBySchoolId($schoolId);
 
     if (empty($rules)) {
-        // 若為空陣列則為不設限制，直接回傳 true
-        return true;
+        // 若為空陣列則直接回傳 false 拒絕登入
+        return false;
     }
-    // 檢查校代碼
-    // $result = checkSchoolId($schoolId);
 
+    // 檢查登入規則
     $result = check($rules, $authInfo);
+
     return $result;
 }
 
@@ -185,23 +195,30 @@ function getRulesBySchoolId($schoolId)
  */
 function check($rules, $authInfo)
 {
-    // return true;
-
     $result = false;
-    // dd($rules[0]['rule']);
+
     foreach ($rules as $rule) {
         $condition = $rule['rule'];
         if (empty($condition)) {
             // 條件為空，跳過，進行下一筆規則檢查
             continue;
         }
+
         // 條件不為空，進行檢查
         // 一旦檢查通過，$result=true，中止檢查
-        foreach ($condition as $k => $v) {
-            if (is_array($v)) {
-                // 條件值為陣列
+        foreach ($condition as $field => $limit) {
+            if (is_string($limit)) {
+                // 條件值為字串，則轉成陣列以利搜尋
+                $limit = [$limit];
+            }
+            // 取得 user authInfo 某欄位值
+            $search = $authInfo[$field];
+            if (is_array($search)) {
+                // 欄位值為陣列，取交集
+                $result = count(array_intersect($limit, $search)) > 0;
             } else {
-                // 條件值為字串
+                // 欄位值為字串
+                $result = in_array($search, $limit);
             }
 
             if ($result) {
@@ -210,7 +227,7 @@ function check($rules, $authInfo)
             }
         }
     }
-    die(var_dump($result));
+
     return $result;
 }
 

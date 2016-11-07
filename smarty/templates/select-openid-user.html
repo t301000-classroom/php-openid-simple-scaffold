@@ -8,7 +8,18 @@
     <h5 class="text-center">選擇登入身份</h5>
     <form action="" method="POST">
         <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>校代碼</th>
+                <th>學校全銜</th>
+                <th>身分</th>
+                <th>職務</th>
+                <th>職稱</th>
+                <th></th>
+            </tr>
+            </thead>
 
+            <tbody>
             {foreach $authInfos as $data}
             <tr>
                 <td>{$data.id}</td>
@@ -25,6 +36,7 @@
                 </td>
             </tr>
             {/foreach}
+            </tbody>
 
             <tr>
                 <td colspan="5"></td>
