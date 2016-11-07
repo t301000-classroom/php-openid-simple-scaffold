@@ -200,8 +200,8 @@ function check($rules, $authInfo)
     foreach ($rules as $rule) {
         $condition = $rule['rule'];
         if (empty($condition)) {
-            // 條件為空，跳過，進行下一筆規則檢查
-            continue;
+            // 條件為空，表示除了校代碼外不檢查其餘條件，回傳 true 允許登入
+            return true;
         }
 
         // 條件不為空，進行檢查
@@ -343,7 +343,8 @@ function updateUserOpenidData($id, array $auth_info)
 
     $sql = "UPDATE users SET openid_data = ? WHERE id = ?";
     if ($stmt = $mysqli->prepare($sql)) {
-        $stmt->bind_param('sd', json_encode($auth_info), $id);
+        $auth_info = json_encode($auth_info);
+        $stmt->bind_param('sd', $auth_info, $id);
         $stmt->execute();
         $stmt->close();
     }
