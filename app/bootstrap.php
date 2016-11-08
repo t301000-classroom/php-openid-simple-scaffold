@@ -5,10 +5,10 @@ use Recca0120\LaravelTracy\Tracy;
 
 date_default_timezone_set('Asia/Taipei');
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 session_start();
 
-$dotenv = new Dotenv(__DIR__);
+$dotenv = new Dotenv(__DIR__ . '/../');
 $dotenv->load();
 
 /* 網站首頁 url */
@@ -37,7 +37,7 @@ if (DEBUG) {
 
 /* Smarty 設定 */
 // 定義 smarty 相關目錄之根路徑
-define('SMARTY_ROOT', __DIR__ . '/smarty');
+define('SMARTY_ROOT', __DIR__ . '/../smarty');
 $smarty = new Smarty();
 // 設定各 smarty 目錄之路徑
 $smarty->setTemplateDir(SMARTY_ROOT . '/templates');
